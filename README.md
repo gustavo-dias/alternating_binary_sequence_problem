@@ -27,13 +27,15 @@ subject to:	|a_i - x_i| = y_i,	for all i in N;
 
 ## Usage
 
-python alt_bin_str_problem.py <binary sequence>
+python alt_bin_seq_problem.py <binary sequence>
 
-E.g.: python alt_bin_str_problem.py 11100110010111.
+E.g.: python alt_bin_seq_problem.py 11100110010111.
 
 
 ## Output
 
 Minimum number of flips;
+	
 Map of bits that were changed in the original sequence A;
+	
 Alternating sequence y.
