@@ -28,7 +28,11 @@ $\qquad\qquad\quad\ y_i + y_{i+1} = 1,	\qquad \forall i \in N-\\{n\\}$;
 $\qquad\qquad\quad\ x,y \in \\{0,1\\}^n$.
 
 
-### Usage
+### Environment and Usage
+
+The Python script uses Picos [1] and GLPK [2] to write and solve the ABSP model introduced in the previous section.
+
+It can be run as:
 
 `python alt_bin_seq_problem.py <binary sequence>`
 
@@ -37,8 +41,18 @@ E.g.: `python alt_bin_seq_problem.py 11100110010111`.
 
 ### Output
 
-Minimum number of flips;
+The minimum number of flips;
 	
-Map of bits that were changed in the original sequence $A$;
+The map $x$ of bits that were changed in the original sequence $A$;
 	
-Alternating sequence $y$.
+The alternating sequence $y$;
+
+The runtime.
+
+
+### References
+
+[1]: Guillaume Sagnol and Maximilian Stahlberg. PICOS: A Python interface to conic optimization solvers. Journal of Open Source Software, Vol 7, Number 70, February 2022. DOI: [10.21105/joss.03915](https://doi.org/10.21105/joss.03915).
+
+[2]: GNU Linear Programming Kit. URL: https://www.gnu.org/software/glpk/
+
