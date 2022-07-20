@@ -5,7 +5,7 @@ ABSP: What is the minimum number of flips required to turn a given sequence of b
 Example: Consider the binary sequence 111. Two flips (first and third bits) yield the alternating sequence 010; however, the alternating sequence 101 can be obtained with one single flip (second bit), thus being the answer to this instance of the ABSP.
 
 
-# Optimization Model
+## Optimization Model
 
 Let n be a natural number such that N = {1,...,n}.
 
@@ -25,14 +25,14 @@ subject to:	|a_i - x_i| = y_i,	for all i in N;
 		x,y in {0,1}^n.
 
 
-#Usage
+## Usage
 
 python alt_bin_str_problem.py <binary sequence>
 
 E.g.: python alt_bin_str_problem.py 11100110010111.
 
 
-#Output
+## Output
 
 Minimum number of flips;
 Map of bits that were changed in the original sequence A;
