@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script to solve the Alternating Binary Sequence Problem (ABSP) via optimization
+The module implements a performance comparison between Mathematical Programming 
+and an O(n) algorithm when solving the Alternating Binary Sequence Problem 
+(ABSP).
 
-( https://www.geeksforgeeks.org/number-flips-make-binary-string-alternate/ )
 
 When: Fri Jul 15 15:16:16 2022
 """
@@ -49,21 +50,23 @@ def solveON (instance: Instance):
             sol1.append(1)
             sol2.append(0)
         
-        # compare with the first solution
+        # compare with the first solution whilst storing the map of necessary 
+        # flips
         if instance.A[i] != sol1[i]:
             num_flips_to_sol1 += 1
             flips_sol1.append(1)
         else:
             flips_sol1.append(0)
 
-        # compare with the second solution
+        # compare with the second solution whilst storing the map of necessary
+        # flips
         if instance.A[i] != sol2[i]:
             num_flips_to_sol2 += 1
             flips_sol2.append(1)
         else:
             flips_sol2.append(0)
     
-    # select solution based on minimum number of flips
+    # select solution based on minimum number of necessary flips
     if num_flips_to_sol1 <= num_flips_to_sol2:
         num_flips = num_flips_to_sol1
         flips = flips_sol1
