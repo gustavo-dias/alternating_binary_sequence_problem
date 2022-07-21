@@ -31,11 +31,11 @@ class Instance ():
 def solveON (instance: Instance):
     """Solve the ABSP using an O(n) algorithm."""
 
+    start = time()
+
     sol1, sol2 = [], []
     flips_sol1, flips_sol2 = [], []
     num_flips_to_sol1, num_flips_to_sol2 = 0, 0
-    
-    start = time()
     
     # loop over each of the n bits of the input sequence, thus O(n)
     for i in range(instance.n):
@@ -87,6 +87,8 @@ def solveON (instance: Instance):
 def solveMP (instance: Instance):
     """Solve the ABSP using Mathematical Programming."""
 
+    start = time()
+
     # create the MP
     A = instance.A
     N = range(instance.n)
@@ -109,10 +111,9 @@ def solveMP (instance: Instance):
             mp.add_constraint(y[i] + y[i+1] == 1)
 
     # solve the MP
-    start = time()
     mp.solve(solver=SOLVER,verbosity=False)
-    end = time()
 
+    end = time()
 
     # report the results
     print("\nRESULTS MP\n----------")
