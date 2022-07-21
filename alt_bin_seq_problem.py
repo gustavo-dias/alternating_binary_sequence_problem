@@ -56,7 +56,7 @@ def solveON (instance: Instance):
         else:
             flips_sol1.append(0)
 
-        #compare with the second solution
+        # compare with the second solution
         if instance.A[i] != sol2[i]:
             num_flips_to_sol2 += 1
             flips_sol2.append(1)
@@ -84,13 +84,8 @@ def solveON (instance: Instance):
     print("Runtime:  {0:.2f} seconds.\n".format(end-start))
         
 
-def solveABSP (instance: Instance):
-    """
-        Solve the passed ABSP instance in three steps:
-            1. Create the mathematical program;
-            2. Run the solver;
-            3. Report the results.
-    """
+def solveMP (instance: Instance):
+    """Solve the ABSP using Mathematical Programming."""
 
     # create the MP
     A = instance.A
@@ -118,18 +113,18 @@ def solveABSP (instance: Instance):
     mp.solve(solver=SOLVER,verbosity=False)
     end = time()
 
+
     # report the results
-    print("\nRESULTS\n-------")
-    print("Status:  {0}".format(mp.status))
-    print("ObjFun:  {0}".format(int(mp.value)))
-    print("Input:   {0}".format(A))
-    print("Flips:   {0}".format(
+    print("\nRESULTS MP\n----------")
+    print("NumFlips:  {0} (Status: {1})".format(int(mp.value), mp.status))
+    print("Input:     {0}".format(A))
+    print("Flips:     {0}".format(
         list(map(int,numpy.array(x.value).T[0].tolist())))
         )
-    print("Output:  {0}".format(
+    print("Output:    {0}".format(
         list(map(int,numpy.array(y.value).T[0].tolist())))
         )
-    print("Runtime: {0:.2f} seconds.\n".format(end-start))
+    print("Runtime:   {0:.2f} seconds.\n".format(end-start))
 
 
 def convertToInstance (arg: str) -> Instance :
@@ -166,7 +161,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         instance = convertToInstance(sys.argv[1])
         if instance != None:
-            solveABSP(instance)
+            solveMP(instance)
             solveON(instance)
     else:
         print("Usage: python alt_bin_seq_problem.py <binary sequence>")
