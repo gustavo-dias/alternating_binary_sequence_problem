@@ -28,6 +28,62 @@ class Instance ():
         return "n = {0}, A = {1}".format(self.n,self.A)
 
 
+def solveON (instance: Instance):
+    """Solve the ABSP using an O(n) algorithm."""
+
+    sol1, sol2 = [], []
+    flips_sol1, flips_sol2 = [], []
+    num_flips_to_sol1, num_flips_to_sol2 = 0, 0
+    
+    start = time()
+    
+    # loop over each of the n bits of the input sequence, thus O(n)
+    for i in range(instance.n):
+
+        # create the two alternating binary solutions to compare with the input
+        # sequence; 
+        if i % 2 == 0:
+            sol1.append(0)
+            sol2.append(1)
+        else:
+            sol1.append(1)
+            sol2.append(0)
+        
+        # compare with the first solution
+        if instance.A[i] != sol1[i]:
+            num_flips_to_sol1 += 1
+            flips_sol1.append(1)
+        else:
+            flips_sol1.append(0)
+
+        #compare with the second solution
+        if instance.A[i] != sol2[i]:
+            num_flips_to_sol2 += 1
+            flips_sol2.append(1)
+        else:
+            flips_sol2.append(0)
+    
+    # select solution based on minimum number of flips
+    if num_flips_to_sol1 <= num_flips_to_sol2:
+        num_flips = num_flips_to_sol1
+        flips = flips_sol1
+        output = sol1
+    else:
+        num_flips = num_flips_to_sol2
+        flips = flips_sol2
+        output = sol2
+    
+    end = time()
+
+    # report the results
+    print("\nRESULTS O(n)\n------------")
+    print("NumFlips: {0}".format(num_flips))
+    print("Input:    {0}".format(instance.A))
+    print("Flips:    {0}".format(flips))
+    print("Output:   {0}".format(output))
+    print("Runtime:  {0:.2f} seconds.\n".format(end-start))
+        
+
 def solveABSP (instance: Instance):
     """
         Solve the passed ABSP instance in three steps:
@@ -111,6 +167,7 @@ if __name__ == "__main__":
         instance = convertToInstance(sys.argv[1])
         if instance != None:
             solveABSP(instance)
+            solveON(instance)
     else:
         print("Usage: python alt_bin_seq_problem.py <binary sequence>")
     
