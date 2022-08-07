@@ -17,7 +17,6 @@ from abc import ABC, abstractmethod
 from enum import IntEnum
 
 
-
 SOLVER='glpk'
 
 class Instance ():
@@ -34,6 +33,7 @@ class Instance ():
             containing exclusevily zeros and/or ones.
         """
         size = int(len(arg.strip()))
+        
         try:
             sequence = [int(bit) for bit in list(arg.strip())]
             for i in range(size):
@@ -42,6 +42,7 @@ class Instance ():
         except ValueError:
             print("Warning: please input binary digits only.\n")
             return None
+        
         return cls(size, sequence)
         
     def __str__(self):
@@ -94,7 +95,6 @@ class Problem ():
  
     @property
     def mathprog_model (self):
-
         A = self.instance.sequence
         n = self.instance.size
         N = range(n)
@@ -143,7 +143,6 @@ class BranchAndBound (Algorithm):
         The class does not implement a B&B algorithm per see, it rather calls \
         third-party implementations.
     """
-    
     def __init__(self, model, solver):
         self.model = model
         self.solver = solver
@@ -189,7 +188,6 @@ class AlgoON (Algorithm):
                 
         return seq_1, seq_2
     
-    
     def run (self):
         """Run the algorithm O(n) and return a Solution."""
         
@@ -230,7 +228,6 @@ class AlgoON (Algorithm):
         end = time()
         solution.runtime = end-start
         return solution
-
 
 
 if __name__ == "__main__":
