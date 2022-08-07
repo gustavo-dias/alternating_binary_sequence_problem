@@ -45,7 +45,7 @@ class Instance ():
         return cls(size, sequence)
         
     def __str__(self):
-        return "size = {0}, sequence = {1}".format(self._size, self._sequence)
+        return "size = {0}, sequence = {1}".format(self.size, self.sequence)
 
 
 class Solution ():
