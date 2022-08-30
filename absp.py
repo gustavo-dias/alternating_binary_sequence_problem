@@ -10,11 +10,12 @@ When: Fri Jul 15 15:16:16 2022
 """
 import os
 import sys
-import picos
 
 from time import time, ctime
 from abc import ABC, abstractmethod
 from enum import IntEnum
+
+import picos
 
 
 SOLVER='glpk'
