@@ -242,7 +242,7 @@ def main () -> None:
 
     if len(sys.argv) == 2:
         instance = Instance.create_from_string(sys.argv[1])
-        if instance != None:
+        if instance is not None:
             absp = Problem(instance)
             absp.solve_using(AlgorithmType.B_AND_B, True)
             absp.solve_using(AlgorithmType.ALGO_ON, True)
