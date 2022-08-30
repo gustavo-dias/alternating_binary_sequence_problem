@@ -165,9 +165,9 @@ class BranchAndBound (Algorithm):
 
             return Solution(int_values, int(sol.value), sol.searchTime)
 
-        except Exception as e_exc:
+        except picos.SolutionFailure as sf_exc:
             print("ERROR: when running B&B; returning 0-valued solution.")
-            print(e_exc)
+            print(sf_exc)
             return Solution(0,0,[[],[]])
 
 
