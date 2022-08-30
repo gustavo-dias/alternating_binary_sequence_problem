@@ -83,7 +83,7 @@ class Algorithm (ABC):
     """Abstract class that represents solution algorithms."""
 
     @abstractmethod
-    def run ():
+    def run (self):
         pass
 
 
