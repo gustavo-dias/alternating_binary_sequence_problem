@@ -46,7 +46,7 @@ class Instance ():
         return cls(size, sequence)
 
     def __str__(self):
-        return "size = {0}, sequence = {1}".format(self.size, self.sequence)
+        return f"size = {self.size}, sequence = {self.sequence}"
 
 
 class Solution ():
@@ -65,10 +65,10 @@ class Solution ():
     @property
     def report(self):
         print("\nRESULTS\n-------")
-        print("NumFlips:  {0}".format(self.num_flips))
-        print("Flips:     {0}".format(self.flips))
-        print("Output:    {0}".format(self.output))
-        print("Runtime:   {0:.2f} seconds.\n".format(self.runtime))
+        print(f"NumFlips:  {self.num_flips}")
+        print(f"Flips:     {self.flips}")
+        print(f"Output:    {self.output}")
+        print(f"Runtime:   {self.runtime:.2f} seconds.\n")
 
 
 class AlgorithmType (IntEnum):
@@ -231,11 +231,8 @@ class AlgoON (Algorithm):
 
 
 if __name__ == "__main__":
-    print("{0}: Starting execution of script {1}.\n".format(
-        ctime(),
-        os.path.basename(__file__)
-        )
-    )
+    print(f"{ctime()}: Starting execution of script {os.path.basename(__file__)}.\n")
+
     start = time()
 
     if len(sys.argv) == 2:
@@ -248,8 +245,4 @@ if __name__ == "__main__":
         print("Usage: python alt_bin_seq_problem.py <binary sequence>\n")
 
     end = time()
-    print("{0}: End of execution; time elapsed: {1:.2f} seconds.".format(
-        ctime(),
-        end-start
-        )
-    )
+    print(f"{ctime()}: End of execution; time elapsed: {end-start:.2f} seconds.")
