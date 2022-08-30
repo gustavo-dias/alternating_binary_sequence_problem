@@ -230,9 +230,9 @@ class AlgoON (Algorithm):
         return solution
 
 
-if __name__ == "__main__":
+def main () -> None:
+    """Run the script in full."""
     print(f"{ctime()}: Starting execution of script {os.path.basename(__file__)}.\n")
-
     start = time()
 
     if len(sys.argv) == 2:
@@ -246,3 +246,7 @@ if __name__ == "__main__":
 
     end = time()
     print(f"{ctime()}: End of execution; time elapsed: {end-start:.2f} seconds.")
+
+
+if __name__ == "__main__":
+    main()
