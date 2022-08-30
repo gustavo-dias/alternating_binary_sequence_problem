@@ -75,8 +75,8 @@ class Solution ():
 class AlgorithmType (IntEnum):
     """Class that implements an enumeration of types of algorithms."""
 
-    b_and_b = 1
-    algo_on = 2
+    B_AND_B = 1
+    ALGO_ON = 2
 
 
 class Algorithm (ABC):
@@ -96,38 +96,42 @@ class Problem ():
 
     @property
     def mathprog_model (self):
-        A = self.instance.sequence
-        n = self.instance.size
-        N = range(n)
+        param_a = self.instance.sequence
+        size = self.instance.size
+        set_n = range(size)
 
-        mp = picos.Problem()
+        model = picos.Problem()
 
-        x = picos.BinaryVariable('x', n)
-        y = picos.BinaryVariable('y', n)
-        z = picos.BinaryVariable('z', n)
+        var_x = picos.BinaryVariable('x', size)
+        var_y = picos.BinaryVariable('y', size)
+        var_z = picos.BinaryVariable('z', size)
 
-        mp.set_objective('min', picos.sum([x[i] for i in N]))
+        model.set_objective('min', picos.sum([var_x[i] for i in set_n]))
 
-        for i in N:
-            mp.add_constraint(y[i] >= A[i] - x[i])
-            mp.add_constraint(y[i] >= -A[i] + x[i])
-            mp.add_constraint(y[i] <= A[i] - x[i] + 2*(1-z[i]))
-            mp.add_constraint(y[i] <= -A[i] + x[i] + 2*z[i])
-            mp.add_constraint(y[i] >= 0)
-            if i < (n-1):
-                mp.add_constraint(y[i] + y[i+1] == 1)
+        for i in set_n:
+            model.add_constraint(var_y[i] >= param_a[i] - var_x[i])
+            model.add_constraint(var_y[i] >= -param_a[i] + var_x[i])
+            model.add_constraint(
+                var_y[i] <= param_a[i] - var_x[i] + 2*(1-var_z[i])
+            )
+            model.add_constraint(
+                var_y[i] <= -param_a[i] + var_x[i] + 2*var_z[i]
+            )
+            model.add_constraint(var_y[i] >= 0)
+            if i < (size-1):
+                model.add_constraint(var_y[i] + var_y[i+1] == 1)
 
-        return mp
+        return model
 
     def solve_using (self, algo_type : AlgorithmType, report : bool = False):
         """
             Solve the ABSP problem using algo_type; prints out the solution if \
             report is set to true.
         """
-        if algo_type == AlgorithmType.b_and_b:
+        if algo_type == AlgorithmType.B_AND_B:
             print("Solving with B&B...")
             self.solution = BranchAndBound(self.mathprog_model, SOLVER).run()
-        elif algo_type == AlgorithmType.algo_on:
+        elif algo_type == AlgorithmType.ALGO_ON:
             print("Solving with O(n)...")
             self.solution = AlgoON(self.instance).run()
         else:
@@ -161,9 +165,9 @@ class BranchAndBound (Algorithm):
 
             return Solution(int_values, int(sol.value), sol.searchTime)
 
-        except Exception as e:
+        except Exception as e_exc:
             print("ERROR: when running B&B; returning 0-valued solution.")
-            print(e)
+            print(e_exc)
             return Solution(0,0,[[],[]])
 
 
@@ -239,9 +243,9 @@ def main () -> None:
     if len(sys.argv) == 2:
         instance = Instance.create_from_string(sys.argv[1])
         if instance != None:
-            ABSP = Problem(instance)
-            ABSP.solve_using(AlgorithmType.b_and_b, True)
-            ABSP.solve_using(AlgorithmType.algo_on, True)
+            absp = Problem(instance)
+            absp.solve_using(AlgorithmType.B_AND_B, True)
+            absp.solve_using(AlgorithmType.ALGO_ON, True)
     else:
         print("Usage: python alt_bin_seq_problem.py <binary sequence>\n")
 
