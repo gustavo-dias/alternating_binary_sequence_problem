@@ -166,8 +166,10 @@ class BranchAndBound (Algorithm):
             return Solution(int_values, int(sol.value), sol.searchTime)
 
         except picos.SolutionFailure as sf_exc:
-            print("ERROR: when running B&B; returning 0-valued solution.")
-            print(sf_exc)
+            print(f"{type(self).__name__}: B&B run failed due to " \
+                  f"{type(sf_exc).__name__}:")
+            print(f" -> {sf_exc}")
+            print("Returning 0-valued solution.\n")
             return Solution(0,0,[[],[]])
 
 
@@ -237,7 +239,7 @@ class AlgoON (Algorithm):
 
 def main () -> None:
     """Run the script in full."""
-    print(f"{ctime()}: Starting execution of script {os.path.basename(__file__)}.\n")
+    print(f"{ctime()}: Starting execution of {os.path.basename(__file__)}.\n")
     start = time()
 
     if len(sys.argv) == 2:
@@ -247,10 +249,10 @@ def main () -> None:
             absp.solve_using(AlgorithmType.B_AND_B, True)
             absp.solve_using(AlgorithmType.ALGO_ON, True)
     else:
-        print("Usage: python alt_bin_seq_problem.py <binary sequence>\n")
+        print("Usage: python3 absp.py <binary sequence>\n")
 
     end = time()
-    print(f"{ctime()}: End of execution; time elapsed: {end-start:.2f} seconds.")
+    print(f"{ctime()}: Terminated; time elapsed: {end-start:.2f} seconds.")
 
 
 if __name__ == "__main__":
