@@ -1,13 +1,33 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-The module implements a performance comparison between Mathematical Programming
-and an O(n) algorithm when solving the Alternating Binary Sequence Problem
-(ABSP).
 
-
-When: Fri Jul 15 15:16:16 2022
 """
+Alternating Binary Sequence Problem (ABSP).
+
+The module implements a performance comparison between a Branch and Bound (B&B)
+and an O(n) algorithm when solving the ABSP.
+
+The B&B used is not explicitly implemented in this module but rather called
+from a public third-party solver.
+
+Usage
+-----
+    python3 absp.py <binary_sequence>
+
+Arguments
+---------
+    binary_sequence : str
+        The string containing the sequence of zeros and ones.
+
+Output
+------
+    For each solution approach, a brief report containing:
+        (O1) The minimum number of flips;
+        (O2) The map of flips;
+        (O3) The solver/algorithm runtime and;
+        (O4) The closest alternating sequence flip-wise.
+"""
+
 import os
 import sys
 
@@ -18,20 +38,39 @@ from enum import IntEnum
 import picos
 
 
+# solver providing the B&B implementation
 SOLVER='glpk'
 
+
 class Instance ():
-    """Class that represents ABSP instances."""
+    """Class that represents ABSP instances.
+
+    Attributes
+    ----------
+        size : int
+            The size of the instance.
+        sequence : list
+            The sequence of zeros and ones.
+    """
 
     def __init__ (self, size : int, sequence : list):
+        """
+        Parameters
+        ----------
+            size : int
+                The size of the instance.
+            sequence : list
+                The sequence of zeros and ones.
+        """
         self.size = size
         self.sequence = sequence
 
     @classmethod
     def create_from_string (cls, arg : str):
-        """
-            Create an ABSP instance or return None if arg is not a string \
-            containing exclusevily zeros and/or ones.
+        """Create an ABSP instance from string arg.
+
+        Return None if arg is not a string containing exclusevily zeros and/or
+        ones.
         """
         size = int(len(arg.strip()))
 
@@ -51,13 +90,36 @@ class Instance ():
 
 
 class Solution ():
-    """Class that represents solutions to the ABSP."""
+    """Class that represents solutions to the ABSP.
+
+    Attributes
+    ----------
+        num_flips : int
+            The number of required flips to obtain an alternating sequence.
+        runtime : float
+            The runtime of the solver/algorithm.
+        flips : list
+            The map of required flips to obtain an alternating sequence.
+        output : list
+            The closest alternating sequence flip-wise.
+    """
 
     def __init__(self,
                  variables : list,
                  num_flips: int = 0,
                  runtime: float = 0.0,
                  ):
+        """
+        Attributes
+        ----------
+            variables : list
+                A list containing both the map of required flips and the
+                closest alternating sequence flip-wise.
+            num_flips : int
+                The number of required flips to obtain an alternating sequence.
+            runtime : float
+                The runtime of the solver/algorithm.
+        """
         self.num_flips = num_flips
         self.runtime = runtime
         self.flips = variables[0]
@@ -65,6 +127,7 @@ class Solution ():
 
     @property
     def report(self):
+        """Print out the solution report."""
         print("\nRESULTS\n-------")
         print(f"NumFlips:  {self.num_flips}")
         print(f"Flips:     {self.flips}")
@@ -73,7 +136,13 @@ class Solution ():
 
 
 class AlgorithmType (IntEnum):
-    """Class that implements an enumeration of types of algorithms."""
+    """Class that implements an enumeration of types of algorithms.
+
+    Options
+    -------
+        B_AND_B : Branch and Bound.
+        ALGO_ON : A trivial O(n) algorithm.
+    """
 
     B_AND_B = 1
     ALGO_ON = 2
@@ -84,18 +153,34 @@ class Algorithm (ABC):
 
     @abstractmethod
     def run (self):
+        """Run the algorithm."""
         pass
 
 
 class Problem ():
-    """Class that represents ABSP problems."""
+    """Class that represents ABSP problems.
+
+    Attributes
+    ----------
+        instance : Instance
+            The ABSP data instance to be solved.
+        solution : Solution
+            The solution to the problem's instance.
+    """
 
     def __init__(self, instance : Instance):
+        """
+        Parameters
+        ----------
+            instance : Instance
+                An ABSP data instance.
+        """
         self.instance = instance
         self.solution = None
 
     @property
     def mathprog_model (self):
+        """Get the mathematical programming model of the problem."""
         param_a = self.instance.sequence
         size = self.instance.size
         set_n = range(size)
@@ -124,9 +209,9 @@ class Problem ():
         return model
 
     def solve_using (self, algo_type : AlgorithmType, report : bool = False):
-        """
-            Solve the ABSP problem using algo_type; prints out the solution if \
-            report is set to true.
+        """Solve the ABSP problem using algo_type.
+
+        Prints out the solution if argument report is set to true.
         """
         if algo_type == AlgorithmType.B_AND_B:
             print("Solving with B&B...")
@@ -142,19 +227,35 @@ class Problem ():
 
 
 class BranchAndBound (Algorithm):
-    """
-        Class that represents Branch and Bound algorithms.
+    """Class that represents Branch and Bound algorithms.
 
-        The class does not implement a B&B algorithm per see, it rather calls \
-        third-party implementations.
+    The class does not implement a B&B algorithm per see, it rather calls
+    third-party implementations.
+
+    Attributes
+    ----------
+        model : picos.Problem
+            The ABSP model to be solved via B&B.
+        solver : str
+            The name of the B&B implementation to be used.
     """
     def __init__(self, model, solver):
+        """
+        Parameters
+        ----------
+            model : picos.Problem
+                The ABSP model to be solved via B&B.
+            solver : str
+                The name of the B&B implementation to be used.
+        """
         self.model = model
         self.solver = solver
 
     def run (self):
-        """Run the B&B algorithm and return a Solution."""
+        """Run the B&B algorithm.
 
+        Return a 0-valued solution in case errors occur during B&B execution.
+        """
         try:
             sol = self.model.solve(solver=self.solver, verbosity=False)
 
@@ -174,15 +275,26 @@ class BranchAndBound (Algorithm):
 
 
 class AlgoON (Algorithm):
-    """CLass that implements the O(n) algorithm."""
+    """CLass that implements the O(n) algorithm.
+
+    Attributes
+    ----------
+        instance : Instance
+            The ABSP data instance to be solved.
+    """
 
     def __init__(self, instance: Instance):
+        """
+        Parameters
+        ----------
+            instance : Instance
+                The ABSP data instance to be solved.
+        """
         self.instance = instance
 
     @staticmethod
     def get_alternating_sequences_of_size(arg : int):
-        """Return lists storing the two alternating sequences of size arg."""
-
+        """Return two lists storing the alternating sequences of size arg."""
         seq_1, seq_2 = [], []
 
         for i in range(arg):
@@ -196,8 +308,7 @@ class AlgoON (Algorithm):
         return seq_1, seq_2
 
     def run (self):
-        """Run the algorithm O(n) and return a Solution."""
-
+        """Run the O(n) algorithm."""
         start = time()
 
         seq_1, seq_2 = self.get_alternating_sequences_of_size(
@@ -249,7 +360,7 @@ def main () -> None:
             absp.solve_using(AlgorithmType.B_AND_B, True)
             absp.solve_using(AlgorithmType.ALGO_ON, True)
     else:
-        print("Usage: python3 absp.py <binary sequence>\n")
+        print("Usage: python3 absp.py <binary_sequence>\n")
 
     end = time()
     print(f"{ctime()}: Terminated; time elapsed: {end-start:.2f} seconds.")
