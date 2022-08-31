@@ -28,12 +28,15 @@ Output
         (O4) The closest alternating sequence flip-wise.
 """
 
+from __future__ import annotations
+
 import os
 import sys
 
 from time import time, ctime
 from abc import ABC, abstractmethod
 from enum import IntEnum
+from typing import List, Iterable, Tuple
 
 import picos
 
@@ -49,33 +52,33 @@ class Instance ():
     ----------
         size : int
             The size of the instance.
-        sequence : list
+        sequence : List[int]
             The sequence of zeros and ones.
     """
 
-    def __init__ (self, size : int, sequence : list):
+    def __init__ (self, size : int, sequence : List[int]) -> None:
         """
         Parameters
         ----------
             size : int
                 The size of the instance.
-            sequence : list
+            sequence : List[int]
                 The sequence of zeros and ones.
         """
-        self.size = size
-        self.sequence = sequence
+        self.size : int = size
+        self.sequence : List[int] = sequence
 
     @classmethod
-    def create_from_string (cls, arg : str):
+    def create_from_string (cls, arg : str) -> Instance:
         """Create an ABSP instance from string arg.
 
         Return None if arg is not a string containing exclusevily zeros and/or
         ones.
         """
-        size = int(len(arg.strip()))
+        size : int = int(len(arg.strip()))
 
         try:
-            sequence = [int(bit) for bit in list(arg.strip())]
+            sequence : List[int] = [int(bit) for bit in list(arg.strip())]
             for i in range(size):
                 if sequence[i] not in [0,1]:
                     raise ValueError
@@ -85,7 +88,7 @@ class Instance ():
 
         return cls(size, sequence)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"size = {self.size}, sequence = {self.sequence}"
 
 
@@ -108,25 +111,25 @@ class Solution ():
                  variables : list,
                  num_flips: int = 0,
                  runtime: float = 0.0,
-                 ):
+                 ) -> None:
         """
         Attributes
         ----------
             variables : list
                 A list containing both the map of required flips and the
-                closest alternating sequence flip-wise.
+                closest alternating sequence.
             num_flips : int
                 The number of required flips to obtain an alternating sequence.
             runtime : float
                 The runtime of the solver/algorithm.
         """
-        self.num_flips = num_flips
-        self.runtime = runtime
-        self.flips = variables[0]
-        self.output = variables[1]
+        self.num_flips : int = num_flips
+        self.runtime : float = runtime
+        self.flips : List[int] = variables[0]
+        self.output : List[int] = variables[1]
 
     @property
-    def report(self):
+    def report(self) -> None:
         """Print out the solution report."""
         print("\nRESULTS\n-------")
         print(f"NumFlips:  {self.num_flips}")
@@ -144,15 +147,15 @@ class AlgorithmType (IntEnum):
         ALGO_ON : A trivial O(n) algorithm.
     """
 
-    B_AND_B = 1
-    ALGO_ON = 2
+    B_AND_B : int = 1
+    ALGO_ON : int = 2
 
 
 class Algorithm (ABC):
     """Abstract class that represents solution algorithms."""
 
     @abstractmethod
-    def run (self):
+    def run (self) -> Solution:
         """Run the algorithm."""
         pass
 
@@ -168,28 +171,28 @@ class Problem ():
             The solution to the problem's instance.
     """
 
-    def __init__(self, instance : Instance):
+    def __init__(self, instance : Instance) -> None:
         """
         Parameters
         ----------
             instance : Instance
                 An ABSP data instance.
         """
-        self.instance = instance
-        self.solution = None
+        self.instance : Instance = instance
+        self.solution : Solution = None
 
     @property
-    def mathprog_model (self):
+    def mathprog_model (self) -> picos.Problem:
         """Get the mathematical programming model of the problem."""
-        param_a = self.instance.sequence
-        size = self.instance.size
-        set_n = range(size)
+        param_a : List[int] = self.instance.sequence
+        size : int = self.instance.size
+        set_n : Iterable = range(size)
 
-        model = picos.Problem()
+        model : picos.Problem = picos.Problem()
 
-        var_x = picos.BinaryVariable('x', size)
-        var_y = picos.BinaryVariable('y', size)
-        var_z = picos.BinaryVariable('z', size)
+        var_x : picos.BinaryVariable = picos.BinaryVariable('x', size)
+        var_y : picos.BinaryVariable = picos.BinaryVariable('y', size)
+        var_z : picos.BinaryVariable = picos.BinaryVariable('z', size)
 
         model.set_objective('min', picos.sum([var_x[i] for i in set_n]))
 
@@ -208,7 +211,10 @@ class Problem ():
 
         return model
 
-    def solve_using (self, algo_type : AlgorithmType, report : bool = False):
+    def solve_using (self,
+                     algo_type : AlgorithmType,
+                     report : bool = False
+                     ) -> None:
         """Solve the ABSP problem using algo_type.
 
         Prints out the solution if argument report is set to true.
@@ -239,7 +245,7 @@ class BranchAndBound (Algorithm):
         solver : str
             The name of the B&B implementation to be used.
     """
-    def __init__(self, model, solver):
+    def __init__(self, model : picos.Problem, solver: str) -> None:
         """
         Parameters
         ----------
@@ -248,13 +254,14 @@ class BranchAndBound (Algorithm):
             solver : str
                 The name of the B&B implementation to be used.
         """
-        self.model = model
-        self.solver = solver
+        self.model : picos.Problem = model
+        self.solver : str = solver
 
-    def run (self):
+    def run (self) -> Solution:
         """Run the B&B algorithm.
 
-        Return a 0-valued solution in case errors occur during B&B execution.
+        Return a 0-valued solution in case of any error occurring during the
+        B&B execution.
         """
         try:
             sol = self.model.solve(solver=self.solver, verbosity=False)
@@ -283,19 +290,22 @@ class AlgoON (Algorithm):
             The ABSP data instance to be solved.
     """
 
-    def __init__(self, instance: Instance):
+    def __init__(self, instance: Instance) -> None:
         """
         Parameters
         ----------
             instance : Instance
                 The ABSP data instance to be solved.
         """
-        self.instance = instance
+        self.instance : Instance = instance
 
     @staticmethod
-    def get_alternating_sequences_of_size(arg : int):
+    def get_alternating_sequences_of_size(
+            arg : int
+        ) -> Tuple[List[int], List[int]]:
         """Return two lists storing the alternating sequences of size arg."""
-        seq_1, seq_2 = [], []
+        seq_1 : List[int] = []
+        seq_2 : List[int] = []
 
         for i in range(arg):
             if i % 2 == 0:
@@ -307,14 +317,16 @@ class AlgoON (Algorithm):
 
         return seq_1, seq_2
 
-    def run (self):
+    def run (self) -> Solution:
         """Run the O(n) algorithm."""
-        start = time()
+        start : float = time()
 
         seq_1, seq_2 = self.get_alternating_sequences_of_size(
             self.instance.size
             )
-        flips_to_seq_1, flips_to_seq_2 = [], []
+
+        flips_to_seq_1 : List[int] = []
+        flips_to_seq_2 : List[int] = []
 
         # loop over each of the input sequence's n bits, thus O(n)
         for i in range(self.instance.size):
@@ -339,11 +351,15 @@ class AlgoON (Algorithm):
         # select solution based on minimum number of required flips, given by
         # the sum of the entries in the lists flips_to_seq_#, where # in {1,2}.
         if sum(flips_to_seq_1) <= sum(flips_to_seq_2):
-            solution = Solution([flips_to_seq_1, seq_1], sum(flips_to_seq_1))
+            solution : Solution = Solution([flips_to_seq_1, seq_1],
+                                           sum(flips_to_seq_1)
+                                           )
         else:
-            solution = Solution([flips_to_seq_2, seq_2], sum(flips_to_seq_2))
+            solution : Solution = Solution([flips_to_seq_2, seq_2],
+                                           sum(flips_to_seq_2)
+                                           )
 
-        end = time()
+        end : float = time()
         solution.runtime = end-start
         return solution
 
@@ -351,18 +367,18 @@ class AlgoON (Algorithm):
 def main () -> None:
     """Run the script in full."""
     print(f"{ctime()}: Starting execution of {os.path.basename(__file__)}.\n")
-    start = time()
+    start : float = time()
 
     if len(sys.argv) == 2:
-        instance = Instance.create_from_string(sys.argv[1])
+        instance : Instance = Instance.create_from_string(sys.argv[1])
         if instance is not None:
-            absp = Problem(instance)
+            absp : Problem = Problem(instance)
             absp.solve_using(AlgorithmType.B_AND_B, True)
             absp.solve_using(AlgorithmType.ALGO_ON, True)
     else:
         print("Usage: python3 absp.py <binary_sequence>\n")
 
-    end = time()
+    end : float = time()
     print(f"{ctime()}: Terminated; time elapsed: {end-start:.2f} seconds.")
 
 
